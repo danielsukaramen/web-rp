@@ -1,0 +1,807 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>For My Beloved, Riyo 💕</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts: Plus Jakarta Sans & Playfair Display -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- FontAwesome & Lucide Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <!-- JS Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+      body {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        background: #faf7f5;
+        color: #2d2b2a;
+        overflow-x: hidden;
+      }
+
+      .font-serif-aesthetic {
+        font-family: "Playfair Display", serif;
+      }
+
+      /* Glassmorphism Effect */
+      .glass-card {
+        background: rgba(255, 255, 255, 0.65);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+      }
+
+      .glass-card-hover {
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .glass-card-hover:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 40px -15px rgba(225, 175, 170, 0.35);
+        background: rgba(255, 255, 255, 0.85);
+      }
+
+      /* Floating Sparkles & Hearts Background Animation */
+      .floating-sparkle {
+        position: fixed;
+        pointer-events: none;
+        user-select: none;
+        z-index: 0;
+        animation: floatUp 8s linear infinite;
+        opacity: 0;
+      }
+
+      @keyframes floatUp {
+        0% {
+          transform: translateY(105vh) scale(0.6) rotate(0deg);
+          opacity: 0;
+        }
+        20% {
+          opacity: 0.6;
+        }
+        80% {
+          opacity: 0.6;
+        }
+        100% {
+          transform: translateY(-10vh) scale(1.1) rotate(180deg);
+          opacity: 0;
+        }
+      }
+
+      /* Polaroid Hover Effect */
+      .polaroid-frame {
+        background: #ffffff;
+        padding: 12px 12px 24px 12px;
+        box-shadow:
+          0 10px 25px -5px rgba(0, 0, 0, 0.05),
+          0 8px 10px -6px rgba(0, 0, 0, 0.03);
+        transition: all 0.4s ease;
+      }
+
+      .polaroid-frame:hover {
+        transform: scale(1.03) rotate(0deg) !important;
+        box-shadow: 0 20px 30px -10px rgba(212, 137, 130, 0.25);
+        z-index: 20;
+      }
+
+      /* Vinyl Animation */
+      .spin-vinyl {
+        animation: spin 6s linear infinite;
+      }
+      .paused-vinyl {
+        animation-play-state: paused;
+      }
+      @keyframes spin {
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Toast Popup Animation */
+      @keyframes toastSlide {
+        0% {
+          transform: translateY(100%) scale(0.9);
+          opacity: 0;
+        }
+        100% {
+          transform: translateY(0) scale(1);
+          opacity: 1;
+        }
+      }
+      .toast-animate {
+        animation: toastSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+    </style>
+  </head>
+  <body class="relative min-h-screen text-gray-800 antialiased">
+    <!-- Floating Background Particles -->
+    <div id="particles-container"></div>
+
+    <!-- AUDIO PLAYER WIDGET (Fixed Bottom Right) -->
+    <div
+      class="fixed bottom-5 right-5 z-50 glass-card p-2.5 sm:p-3 rounded-full shadow-xl flex items-center gap-3 border border-rose-100"
+    >
+      <div
+        id="vinyl-disc"
+        class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-stone-900 border-2 border-rose-300 flex items-center justify-center spin-vinyl paused-vinyl shadow-md relative overflow-hidden flex-shrink-0"
+      >
+        <div
+          class="w-3.5 h-3.5 bg-rose-200 rounded-full border border-stone-800"
+        ></div>
+      </div>
+      <div class="hidden sm:block pr-1">
+        <p
+          class="text-xs font-semibold text-stone-800 truncate max-w-[110px]"
+          id="song-title"
+        >
+          Our Favorite Song
+        </p>
+        <p class="text-[10px] text-stone-500">Click to play 🎵</p>
+      </div>
+      <button
+        onclick="toggleAudio()"
+        id="play-btn"
+        class="w-9 h-9 sm:w-10 sm:h-10 bg-rose-400 hover:bg-rose-500 text-white rounded-full flex items-center justify-center shadow-md transition active:scale-95"
+      >
+        <i class="fas fa-play text-xs sm:text-sm" id="play-icon"></i>
+      </button>
+
+      <!-- ========================================================================= -->
+      <!-- GANTI AUDIO / LAGU KENANGAN DI SINI (Masukkan URL direct mp3) -->
+      <!-- ========================================================================= -->
+      <audio id="bg-music" loop>
+        <source src="/assets/music/favsong.mp3" type="audio/mpeg" />
+      </audio>
+    </div>
+
+    <!-- HERO HEADER SECTION -->
+    <header
+      class="relative z-10 pt-16 pb-12 px-4 text-center max-w-4xl mx-auto"
+    >
+      <div
+        class="inline-flex items-center gap-2 bg-rose-50/80 border border-rose-200/60 px-4 py-1.5 rounded-full text-xs font-medium text-rose-700 mb-6 shadow-sm"
+      >
+        <span class="w-2 h-2 rounded-full bg-rose-400 animate-pulse"></span>
+        Special Space For My Favourite Person
+      </div>
+
+      <h1
+        class="text-4xl sm:text-6xl font-serif-aesthetic font-bold text-stone-800 mb-4 tracking-tight leading-tight"
+      >
+        Missing You Always, <span class="text-rose-500 italic">Riyo</span>.
+      </h1>
+
+      <p
+        class="text-stone-600 max-w-xl mx-auto text-sm sm:text-base leading-relaxed"
+      >
+        Meski terhalang jarak dan layar,
+        <i class="font-serif-aesthetic"
+          >you're always the sweetest part of my day</i
+        >. Pemberian kecil ini aku buat khusus buat pengingat seberapa
+        berharganya Riyo buat Leed.
+      </p>
+
+      <!-- LIVE LDR / TIME TOGETHER COUNTER CARD -->
+      <div
+        class="mt-10 glass-card p-6 sm:p-8 rounded-3xl shadow-sm border border-stone-200/60 max-w-2xl mx-auto"
+      >
+        <div
+          class="flex items-center justify-center gap-2 text-xs font-semibold tracking-wider text-rose-500 uppercase mb-4"
+        >
+          <i class="fas fa-heart text-[10px]"></i> Time Spent Together & Counted
+        </div>
+
+        <div class="grid grid-cols-4 gap-2 sm:gap-4 text-center">
+          <div
+            class="bg-white/80 p-3 sm:p-4 rounded-2xl border border-rose-100/50"
+          >
+            <span
+              id="timer-days"
+              class="block text-2xl sm:text-4xl font-bold text-stone-800 font-serif-aesthetic"
+              >00</span
+            >
+            <span class="text-[11px] text-stone-500 font-medium">Days</span>
+          </div>
+          <div
+            class="bg-white/80 p-3 sm:p-4 rounded-2xl border border-rose-100/50"
+          >
+            <span
+              id="timer-hours"
+              class="block text-2xl sm:text-4xl font-bold text-stone-800 font-serif-aesthetic"
+              >00</span
+            >
+            <span class="text-[11px] text-stone-500 font-medium">Hours</span>
+          </div>
+          <div
+            class="bg-white/80 p-3 sm:p-4 rounded-2xl border border-rose-100/50"
+          >
+            <span
+              id="timer-minutes"
+              class="block text-2xl sm:text-4xl font-bold text-stone-800 font-serif-aesthetic"
+              >00</span
+            >
+            <span class="text-[11px] text-stone-500 font-medium">Mins</span>
+          </div>
+          <div
+            class="bg-white/80 p-3 sm:p-4 rounded-2xl border border-rose-100/50"
+          >
+            <span
+              id="timer-seconds"
+              class="block text-2xl sm:text-4xl font-bold text-rose-500 font-serif-aesthetic"
+              >00</span
+            >
+            <span class="text-[11px] text-stone-500 font-medium">Secs</span>
+          </div>
+        </div>
+
+        <p class="text-xs text-stone-500 mt-4 italic">
+          Since 18 August 2026 • "Distance means so little when someone means so
+          much."
+        </p>
+      </div>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="max-w-5xl mx-auto px-4 relative z-10 space-y-20 py-6">
+      <!-- SECTION 1: THE 4 PILLARS OF RIYO -->
+      <section>
+        <div class="text-center mb-10">
+          <span
+            class="text-xs font-semibold text-rose-500 uppercase tracking-widest block mb-1"
+            >Why You Are So Special</span
+          >
+          <h2
+            class="text-3xl sm:text-4xl font-serif-aesthetic font-bold text-stone-800"
+          >
+            The 4 Pillars of Riyo
+          </h2>
+          <p class="text-stone-500 text-sm mt-2 max-w-md mx-auto">
+            Kombinasi kualitas dalam diri Riyo yang selalu bikin aku makin kagum
+            setiap harinya.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Pillar 1: Brain -->
+          <div
+            class="glass-card glass-card-hover p-6 sm:p-8 rounded-3xl border border-rose-100 relative overflow-hidden group"
+          >
+            <div
+              class="w-12 h-12 bg-rose-100 text-rose-600 rounded-2xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition duration-300"
+            >
+              <i class="fas fa-brain"></i>
+            </div>
+            <span
+              class="text-xs font-bold text-rose-400 tracking-wider uppercase"
+              >Pillar I</span
+            >
+            <h3
+              class="text-xl font-serif-aesthetic font-bold text-stone-800 mb-2"
+            >
+              Brain
+            </h3>
+            <p class="text-stone-600 text-sm leading-relaxed">
+              Cara Riyo berpikir, wawasan Riyo, dan perspektif cerdas Riyo
+              selalu bikin aku terkagum. Ngobrol sama Riyo nggak pernah
+              ngebosenin karena Riyo selalu punya insight yang thoughtful.
+            </p>
+          </div>
+
+          <!-- Pillar 2: Beauty -->
+          <div
+            class="glass-card glass-card-hover p-6 sm:p-8 rounded-3xl border border-rose-100 relative overflow-hidden group"
+          >
+            <div
+              class="w-12 h-12 bg-rose-100 text-rose-600 rounded-2xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition duration-300"
+            >
+              <i class="fa-solid fa-wand-magic-sparkles"></i>
+            </div>
+            <span
+              class="text-xs font-bold text-rose-400 tracking-wider uppercase"
+              >Pillar II</span
+            >
+            <h3
+              class="text-xl font-serif-aesthetic font-bold text-stone-800 mb-2"
+            >
+              Beauty
+            </h3>
+            <p class="text-stone-600 text-sm leading-relaxed">
+              Bukan cuma paras manis dan senyuman Riyo yang bikin sejuk, tapi
+              juga keindahan energi dan aura positif Riyo. You are effortlessly
+              stunning inside and out.
+            </p>
+          </div>
+
+          <!-- Pillar 3: Behavior -->
+          <div
+            class="glass-card glass-card-hover p-6 sm:p-8 rounded-3xl border border-rose-100 relative overflow-hidden group"
+          >
+            <div
+              class="w-12 h-12 bg-rose-100 text-rose-600 rounded-2xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition duration-300"
+            >
+              <i class="fas fa-heart"></i>
+            </div>
+            <span
+              class="text-xs font-bold text-rose-400 tracking-wider uppercase"
+              >Pillar III</span
+            >
+            <h3
+              class="text-xl font-serif-aesthetic font-bold text-stone-800 mb-2"
+            >
+              Behavior
+            </h3>
+            <p class="text-stone-600 text-sm leading-relaxed">
+              Kebaikan hati Riyo, kelembutan, dan rasa empati yang Riyo punya
+              buat sekitar. Manner dan ketulusan Riyo bikin siapa aja merasa
+              nyaman dan dihargai.
+            </p>
+          </div>
+
+          <!-- Pillar 4: Boundaries -->
+          <div
+            class="glass-card glass-card-hover p-6 sm:p-8 rounded-3xl border border-rose-100 relative overflow-hidden group"
+          >
+            <div
+              class="w-12 h-12 bg-rose-100 text-rose-600 rounded-2xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition duration-300"
+            >
+              <i class="fas fa-shield-halved"></i>
+            </div>
+            <span
+              class="text-xs font-bold text-rose-400 tracking-wider uppercase"
+              >Pillar IV</span
+            >
+            <h3
+              class="text-xl font-serif-aesthetic font-bold text-stone-800 mb-2"
+            >
+              Boundaries
+            </h3>
+            <p class="text-stone-600 text-sm leading-relaxed">
+              Prinsip tegas Riyo dalam menjaga kehormatan, nilai diri, dan
+              batasan yang sehat. Karakter kuat Riyo ini yang bikin aku makin
+              respek dan makin bangga punya Riyo.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 2: PHOTO DUMP / POLAROID GALLERY -->
+      <section>
+        <div class="text-center mb-10">
+          <span
+            class="text-xs font-semibold text-rose-500 uppercase tracking-widest block mb-1"
+            >Captured Moments</span
+          >
+          <h2
+            class="text-3xl sm:text-4xl font-serif-aesthetic font-bold text-stone-800"
+          >
+            Photo Dump & Memories
+          </h2>
+          <p class="text-stone-500 text-sm mt-2">
+            Klik fotonya sayang, ada deskripsinya loh!
+          </p>
+        </div>
+
+        <!-- Grid Photo Dump -->
+        <div
+          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 px-2"
+          id="photo-gallery"
+        >
+          <!-- Data foto dirender otomatis melalui JavaScript di bawah -->
+        </div>
+      </section>
+
+      <!-- SECTION 3: INTERACTIVE OPEN WHEN NOTES -->
+      <section
+        class="glass-card p-8 sm:p-10 rounded-3xl border border-rose-100 shadow-sm"
+      >
+        <div class="text-center mb-8">
+          <span
+            class="text-xs font-semibold text-rose-500 uppercase tracking-widest block mb-1"
+            >Virtual Warm Hugs</span
+          >
+          <h2 class="text-3xl font-serif-aesthetic font-bold text-stone-800">
+            Open When...
+          </h2>
+          <p class="text-stone-500 text-sm mt-1">
+            Pilih amplop rahasia sesuai kondisi perasaan kamu saat ini.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-5" id="notes-container">
+          <!-- Notes dirender oleh JS -->
+        </div>
+      </section>
+
+      <!-- SECTION 4: DISCORD DIRECT CONNECT -->
+      <section class="text-center">
+        <div
+          class="glass-card p-8 sm:p-12 rounded-3xl border border-indigo-100 max-w-xl mx-auto shadow-sm relative overflow-hidden"
+        >
+          <div
+            class="w-16 h-16 bg-indigo-500 text-white rounded-2xl flex items-center justify-center mx-auto mb-5 text-2xl shadow-lg shadow-indigo-200"
+          >
+            <i class="fab fa-discord"></i>
+          </div>
+
+          <h3
+            class="text-2xl font-serif-aesthetic font-bold text-stone-800 mb-2"
+          >
+            Can't Stop Missing You?
+          </h3>
+          <p class="text-stone-600 text-sm mb-6 max-w-md mx-auto">
+            Yuk pindah ke Discord! Mau apa sayang? voice call, streaming bareng,
+            atau ngobrol santai malam ini.
+          </p>
+
+          <!-- ========================================================================= -->
+          <!-- DISCORD BUTTON & ACTIONS (Isi username Discord atau link invite/channel) -->
+          <!-- ========================================================================= -->
+          <div
+            class="flex flex-col sm:flex-row items-center justify-center gap-3"
+          >
+            <!-- Tombol Direct Open Discord App/Web -->
+            <button
+              onclick="openDiscord()"
+              class="w-full sm:w-auto bg-[#5865F2] hover:bg-[#4752C4] text-white font-semibold px-7 py-3.5 rounded-full shadow-md transition active:scale-95 flex items-center justify-center gap-2 text-sm"
+            >
+              <i class="fab fa-discord text-lg"></i> Open Discord
+            </button>
+
+            <!-- Tombol Copy Discord Tag/Username -->
+            <button
+              onclick="copyDiscordTag()"
+              class="w-full sm:w-auto bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold px-6 py-3.5 rounded-full border border-stone-200 transition active:scale-95 flex items-center justify-center gap-2 text-sm"
+            >
+              <i class="far fa-copy text-sm"></i> Copy Username
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer
+      class="text-center py-10 text-xs text-stone-400 relative z-10 border-t border-stone-200/40 mt-16"
+    >
+      <p>Crafted with lots of love for Riyo 💕 • LDR Relationship 2026</p>
+    </footer>
+
+    <!-- MODAL PREVIEW FOTO LIGHTBOX -->
+    <div
+      id="photo-modal"
+      class="fixed inset-0 z-50 bg-stone-900/70 backdrop-blur-sm hidden flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl relative animate-fadeIn"
+      >
+        <button
+          onclick="closePhotoModal()"
+          class="absolute top-3 right-3 w-8 h-8 bg-black/40 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition z-10"
+        >
+          <i class="fas fa-times text-xs"></i>
+        </button>
+        <div class="max-h-[320px] overflow-hidden bg-stone-100">
+          <img
+            id="modal-img"
+            src=""
+            alt="Memory"
+            class="w-full h-full object-cover"
+          />
+        </div>
+        <div class="p-6">
+          <span
+            id="modal-date"
+            class="text-xs text-rose-500 font-semibold uppercase tracking-wider block mb-1"
+            >Date</span
+          >
+          <h3
+            id="modal-title"
+            class="text-xl font-serif-aesthetic font-bold text-stone-800 mb-2"
+          >
+            Title
+          </h3>
+          <p id="modal-desc" class="text-stone-600 text-sm leading-relaxed">
+            Description...
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL OPEN WHEN NOTES -->
+    <div
+      id="note-modal"
+      class="fixed inset-0 z-50 bg-stone-900/70 backdrop-blur-sm hidden flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white border border-rose-100 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative text-center"
+      >
+        <button
+          onclick="closeNoteModal()"
+          class="absolute top-4 right-4 w-8 h-8 bg-stone-100 hover:bg-stone-200 text-stone-600 rounded-full flex items-center justify-center transition"
+        >
+          <i class="fas fa-times text-xs"></i>
+        </button>
+        <div class="text-4xl mb-3" id="note-icon">💌</div>
+        <h3
+          id="note-title"
+          class="text-2xl font-serif-aesthetic font-bold text-stone-800 mb-3"
+        >
+          Note Title
+        </h3>
+        <div
+          class="bg-rose-50/60 p-4 rounded-2xl border border-rose-100 mb-5 text-left"
+        >
+          <p
+            id="note-body"
+            class="text-stone-700 text-sm leading-relaxed italic"
+          >
+            Note content...
+          </p>
+        </div>
+        <button
+          onclick="closeNoteModal()"
+          class="bg-rose-400 hover:bg-rose-500 text-white text-xs font-semibold px-6 py-2.5 rounded-full transition"
+        >
+          Close Letter 💕
+        </button>
+      </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div
+      id="toast"
+      class="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 bg-stone-800 text-white text-xs font-medium px-5 py-2.5 rounded-full shadow-xl hidden flex items-center gap-2"
+    >
+      <i class="fas fa-check-circle text-emerald-400"></i>
+      <span id="toast-msg">Text copied!</span>
+    </div>
+
+    <script>
+      /* =========================================================================
+       * ⚙️ CONFIGURASI PERSONAL & DATA
+       * ========================================================================= */
+
+      // 1. Data Pasangan & Discord Username
+      const DISCORD_USERNAME = "myrtle_allegra"; // Ganti dengan Username Discord Riyo
+      const DISCORD_DIRECT_LINK = "https://discord.com/"; // Link Direct Channel / DM jika ada
+
+      // 2. Tanggal Jadian (18 Agustus 2026)
+      const START_DATE = new Date("2026-08-18T00:00:00");
+
+      // 3. PHOTO DUMP DATA
+      // Catatan: Ganti URL image di bawah dengan file/link foto kamu & Riyo!
+      const photoDumpData = [
+        {
+          // GANTI FOTO 1 DI SINI
+          image: "/assets/images/official.png",
+          title: "Officially Together",
+          date: "Memori #1",
+          caption:
+            "Pertama kali aku bisa melihat effort buat Riyo memiliki awal yang indah.",
+          rotation: "-2deg",
+        },
+        {
+          // GANTI FOTO 2 DI SINI
+          image: "/assets/images/band2.png",
+          title: "Melody of Us",
+          date: "Memori #2",
+          caption: "Kita sama-sama memiliki kebahagian dari bermain musik.",
+          rotation: "3deg",
+        },
+        {
+          // GANTI FOTO 3 DI SINI
+          image: "/assets/images/riyo.png",
+          title: "Strong & Independent",
+          date: "Memori #3",
+          caption: "Independent girl-!.",
+          rotation: "-3deg",
+        },
+      ];
+
+      // 4. OPEN WHEN NOTES DATA
+      const notesData = [
+        {
+          icon: "🥺",
+          buttonText: "Open when you miss me",
+          title: "When You Miss Me",
+          body: "Kalau Riyo lagi kangen banget, inget ya kalau aku di sini juga lagi mikirin Riyo. You are always worth the wait, Riyo! 💕",
+        },
+        {
+          icon: "🌙",
+          buttonText: "Open when Virtual gets tough",
+          title: "When Virtual Gets Tough",
+          body: "Virtual memang nggak mudah, tapi inget 4 pilar luar biasa dalam diri Riyo yang bikin hubungan kita spesial. We're a team, and we've got this together!",
+        },
+        {
+          icon: "✨",
+          buttonText: "Open when you need a hug",
+          title: "Virtual Warm Hug",
+          body: "Sending you the biggest virtual hug right now! Tarik napas dalam-dalam, senyum sedikit, and remember how much I adore you.",
+        },
+      ];
+
+      /* =========================================================================
+       * 🚀 PROGRAM FUNCTIONS
+       * ========================================================================= */
+
+      // Live Time Counter
+      function updateTimer() {
+        const now = new Date();
+        const diff = Math.abs(now - START_DATE);
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((diff / (1000 * 60)) % 60);
+        const seconds = Math.floor((diff / 1000) % 60);
+
+        document.getElementById("timer-days").innerText = days
+          .toString()
+          .padStart(2, "0");
+        document.getElementById("timer-hours").innerText = hours
+          .toString()
+          .padStart(2, "0");
+        document.getElementById("timer-minutes").innerText = minutes
+          .toString()
+          .padStart(2, "0");
+        document.getElementById("timer-seconds").innerText = seconds
+          .toString()
+          .padStart(2, "0");
+      }
+      setInterval(updateTimer, 1000);
+      updateTimer();
+
+      // Render Photo Dump
+      const galleryContainer = document.getElementById("photo-gallery");
+      photoDumpData.forEach((item, index) => {
+        const card = document.createElement("div");
+        card.className = "polaroid-frame cursor-pointer rounded-2xl";
+        card.style.transform = `rotate(${item.rotation})`;
+        card.onclick = () => openPhotoModal(index);
+
+        card.innerHTML = `
+                <div class="overflow-hidden rounded-xl mb-3 bg-stone-100 aspect-square">
+                    <img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover transition duration-500 hover:scale-105" loading="lazy">
+                </div>
+                <h4 class="font-bold text-stone-800 text-sm font-serif-aesthetic">${item.title}</h4>
+                <div class="flex justify-between items-center mt-1">
+                    <span class="text-[11px] text-rose-500 font-medium">${item.date}</span>
+                    <i class="fas fa-heart text-[10px] text-rose-300"></i>
+                </div>
+            `;
+        galleryContainer.appendChild(card);
+      });
+
+      // Photo Modal Lightbox
+      function openPhotoModal(index) {
+        const item = photoDumpData[index];
+        document.getElementById("modal-img").src = item.image;
+        document.getElementById("modal-title").innerText = item.title;
+        document.getElementById("modal-date").innerText = item.date;
+        document.getElementById("modal-desc").innerText = item.caption;
+
+        document.getElementById("photo-modal").classList.remove("hidden");
+      }
+      function closePhotoModal() {
+        document.getElementById("photo-modal").classList.add("hidden");
+      }
+
+      // Render Open When Notes
+      const notesContainer = document.getElementById("notes-container");
+      notesData.forEach((note, index) => {
+        const card = document.createElement("div");
+        card.className =
+          "bg-white/90 p-5 rounded-2xl border border-rose-100/80 shadow-sm hover:shadow-md transition text-center cursor-pointer hover:border-rose-300 group";
+        card.onclick = () => openNoteModal(index);
+
+        card.innerHTML = `
+                <div class="text-3xl mb-2 group-hover:scale-110 transition-transform duration-300">${note.icon}</div>
+                <h4 class="font-semibold text-stone-800 text-xs sm:text-sm mb-1">${note.buttonText}</h4>
+                <span class="text-[11px] text-rose-400 font-medium">Click to open ✨</span>
+            `;
+        notesContainer.appendChild(card);
+      });
+
+      function openNoteModal(index) {
+        const note = notesData[index];
+        document.getElementById("note-icon").innerText = note.icon;
+        document.getElementById("note-title").innerText = note.title;
+        document.getElementById("note-body").innerText = `"${note.body}"`;
+
+        confetti({
+          particleCount: 30,
+          spread: 50,
+          origin: { y: 0.6 },
+        });
+
+        document.getElementById("note-modal").classList.remove("hidden");
+      }
+      function closeNoteModal() {
+        document.getElementById("note-modal").classList.add("hidden");
+      }
+
+      // Discord Integration
+      function openDiscord() {
+        window.open(DISCORD_DIRECT_LINK, "_blank");
+      }
+
+      function copyDiscordTag() {
+        // Standard fallback copy method to comply with frame restrictions
+        const tempInput = document.createElement("input");
+        tempInput.value = DISCORD_USERNAME;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand("copy");
+        tempInput.remove();
+
+        showToast(`Copied Discord Username: ${DISCORD_USERNAME}`);
+      }
+
+      function showToast(message) {
+        const toast = document.getElementById("toast");
+        document.getElementById("toast-msg").innerText = message;
+        toast.classList.remove("hidden");
+        toast.classList.add("toast-animate");
+
+        setTimeout(() => {
+          toast.classList.add("hidden");
+          toast.classList.remove("toast-animate");
+        }, 3000);
+      }
+
+      // Audio Player Controls
+      const audio = document.getElementById("bg-music");
+      const playIcon = document.getElementById("play-icon");
+      const vinylDisc = document.getElementById("vinyl-disc");
+      let isPlaying = false;
+
+      function toggleAudio() {
+        if (isPlaying) {
+          audio.pause();
+          playIcon.className = "fas fa-play text-xs sm:text-sm";
+          vinylDisc.classList.add("paused-vinyl");
+        } else {
+          audio.play().catch((e) => console.log("Audio play blocked"));
+          playIcon.className = "fas fa-pause text-xs sm:text-sm";
+          vinylDisc.classList.remove("paused-vinyl");
+        }
+        isPlaying = !isPlaying;
+      }
+
+      // Background Floating Sparkles
+      function secureRandom() {
+        const values = new Uint32Array(1);
+        crypto.getRandomValues(values);
+        return values[0] / (0xffffffff + 1);
+      }
+
+      function createSparkles() {
+        const container = document.getElementById("particles-container");
+        const icons = ["✨", "🌸", "💖", "🤍", "🌙"];
+
+        for (let i = 0; i < 15; i++) {
+          const sparkle = document.createElement("div");
+          sparkle.className = "floating-sparkle text-sm";
+          sparkle.innerText = icons[Math.floor(secureRandom() * icons.length)];
+          sparkle.style.left = secureRandom() * 100 + "vw";
+          sparkle.style.animationDuration = secureRandom() * 4 + 6 + "s";
+          sparkle.style.animationDelay = secureRandom() * 5 + "s";
+          container.appendChild(sparkle);
+        }
+      }
+      createSparkles();
+    </script>
+  </body>
+</html>
